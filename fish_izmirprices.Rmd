@@ -1,0 +1,128 @@
+---
+title: "fish"
+author: "Firat Gundem"
+date: "3/14/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r warning=FALSE, message= FALSE, echo=FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(XML)
+library(rjson)
+library(jsonlite)
+library(readr)
+library(tm)
+library(lubridate)
+library(plotly)
+library(htmlwidgets)
+```
+
+
+
+```{r}
+
+fish_2007 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=27832153-b03c-4008-9eb0-e33fa6165de8&limit=506")
+
+
+fish_2008 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=2b65a199-4cdb-4bde-b342-2fb56a402139&limit=2136")
+
+fish_2009 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=587478c8-584c-4d14-8de3-840130817960&limit=12528")
+
+fish_2010 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=7d69ce36-7327-46d8-987b-7e41326d0024&limit=15995")
+
+fish_2011 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=b58006b0-f099-457d-ac09-1b0504d95079&limit=21733")
+
+fish_2012 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=723ffd91-29dd-4647-a881-562d4fc7cb24&limit=23049")
+
+fish_2013 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=8cda8838-4f90-46ac-b9e7-182d90212a75&limit=23109")
+
+fish_2014 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=1cb5555d-6dbb-4b95-88cc-72af90957748&limit=22706")
+
+fish_2015 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=d8a607e9-8e6b-40fe-b161-dd4d2d36d713&limit=22921")
+
+fish_2016 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=d967fa8f-e6b7-4d20-bf5c-2ce3b1ed19f3&limit=23722")
+
+fish_2017 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=e92efbc2-09fc-4e35-84a3-9d75735c7096&limit=24125")
+
+fish_2018 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=68d4c4a9-9db0-4c8a-b964-ef151c91daff&limit=24251")
+
+fish_2019 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=14a87034-353c-43f2-b6db-9b0135a771b1&limit=24270")
+
+fish_2020 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=8ef70d0f-cc2d-4df4-872e-b3297da44d0b&limit=22670")
+
+fish_2021 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=022e9a4d-b184-495f-8dc2-734fb07e350c&limit=23604")
+
+fish_2022 <- fromJSON("https://acikveri.bizizmir.com/tr/api/3/action/datastore_search?resource_id=fe1841f6-3da5-4b18-aa23-3079e211f755&limit=4151")
+```
+
+
+```{r}
+
+fish_2007<- as.data.frame(fish_2007[['result']][['records']])
+
+fish_2008<- as.data.frame(fish_2008[['result']][['records']])
+
+fish_2009<- as.data.frame(fish_2009[['result']][['records']])
+
+fish_2010<- as.data.frame(fish_2010[['result']][['records']])
+
+fish_2011<- as.data.frame(fish_2011[['result']][['records']])
+
+fish_2012<- as.data.frame(fish_2012[['result']][['records']])
+
+fish_2013<- as.data.frame(fish_2013[['result']][['records']])
+
+fish_2014<- as.data.frame(fish_2014[['result']][['records']])
+
+fish_2015<- as.data.frame(fish_2015[['result']][['records']])
+
+fish_2016<- as.data.frame(fish_2016[['result']][['records']])
+
+fish_2017<- as.data.frame(fish_2017[['result']][['records']])
+
+fish_2018<- as.data.frame(fish_2018[['result']][['records']])
+
+fish_2019<- as.data.frame(fish_2019[['result']][['records']])
+
+fish_2020<- as.data.frame(fish_2020[['result']][['records']])
+
+fish_2021<- as.data.frame(fish_2021[['result']][['records']])
+
+fish_2022<- as.data.frame(fish_2022[['result']][['records']])
+
+```
+
+
+
+```{r}
+df_fish <- rbind(fish_2007, fish_2008, fish_2009, fish_2010, fish_2011, fish_2012, fish_2013, fish_2014, fish_2015, fish_2016, fish_2017, fish_2018, fish_2019, fish_2020, fish_2021, fish_2022)
+
+```
+
+
+
+```{r}
+df_fish$TARIH <- as.Date(df_fish$TARIH)
+
+df_fish$ORTALAMA_UCRET <- as.numeric(sub(",", ".", df_fish$ORTALAMA_UCRET))
+
+df_fish$ASGARI_UCRET <- as.numeric(sub(",", ".", df_fish$ASGARI_UCRET))
+
+df_fish$AZAMI_UCRET <- as.numeric(sub(",", ".", df_fish$AZAMI_UCRET))
+```
+
+
+```{r}
+str(df_fish)
+
+View(df_fish)
+
+df_fish %>% count(MAL_ADI)
+```
