@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r warning=FALSE, message= FALSE, echo=FALSE}
+```{r warning=FALSE, message= FALSE, echo=TRUE}
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
@@ -122,7 +122,67 @@ df_fish$AZAMI_UCRET <- as.numeric(sub(",", ".", df_fish$AZAMI_UCRET))
 ```{r}
 str(df_fish)
 
-View(df_fish)
+#View(df_fish)
 
 df_fish %>% count(MAL_ADI)
 ```
+
+
+```{r}
+df_fish <- df_fish %>%
+  mutate(year = lubridate::year(TARIH), 
+         month = lubridate::month(TARIH), 
+         day = lubridate::day(TARIH))
+head(df_fish)
+```
+
+
+```{r warning=FALSE, echo=TRUE, message=FALSE}
+df_fish_a <- df_fish %>% group_by(MAL_ADI, year)%>% summarize(m = mean(ORTALAMA_UCRET))
+
+df_fish_b <- df_fish %>% group_by(MAL_ADI, year) %>% filter(MAL_ADI =="AHTAPOT(DONUK)") %>% summarize(m = mean(ORTALAMA_UCRET))
+
+df_fish_c <- df_fish%>% group_by(MAL_TURU, year)%>% summarize(m = mean(ORTALAMA_UCRET))
+
+df_fish_d <- df_fish %>% group_by(MAL_TURU, year, month)%>% summarize(m = mean(ORTALAMA_UCRET))
+
+```
+
+```{r }
+df_fish_a
+df_fish_b
+df_fish_c
+df_fish_d
+```
+
+
+
+```{r}
+f3 <- plot_ly(df_fish_d, x = ~month, y = ~m) %>%
+  add_lines(color = ~ordered(year))
+saveWidget(f3, "f3.html", selfcontained = F, libdir = "lib")
+```
+
+
+```{r}
+f2 <- plot_ly(df_fish_c, x = ~year, y = ~m) %>%
+  add_lines(color = ~ordered(MAL_TURU)) 
+saveWidget(f2, "f2.html", selfcontained = F, libdir = "lib")
+
+```
+
+
+
+```{r message= FALSE, echo= FALSE, warning= FALSE}
+f1 <- plot_ly(df_fish_a, x = ~year, y = ~m) %>%
+ # add_lines(color = ~ordered(MAL_ADI)) %>% 
+  add_lines(linetype = ~MAL_ADI)
+saveWidget(f1, "f1.html", selfcontained = F, libdir = "lib")
+```
+
+```{r message= FALSE, echo= FALSE, warning= FALSE}
+f1
+f2
+f3
+```
+
